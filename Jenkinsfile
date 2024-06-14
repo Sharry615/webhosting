@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPO_URL = 'https://github.com/Sharry615/webhosting.git'
-        BRANCH = 'main'
+        BRANCH = 'master'
         DEPLOY_DIR = '/var/www/html/webhosting'
     }
 
