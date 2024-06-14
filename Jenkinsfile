@@ -1,70 +1,59 @@
 pipeline {
     agent any
 
-    environment {
-        REPO_URL = 'https://github.com/Sharry615/webhosting.git'
-        BRANCH = 'master'
-        DEPLOY_DIR = '/var/www/html/webhosting'
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the code...'
-                // Clean workspace before checkout
-                deleteDir()
-                // Checkout the repository
-                git branch: "${env.BRANCH}", url: "${env.REPO_URL}"
-            }
-        }
-
-        stage('Clean Previous Deployment') {
-            steps {
-                echo 'Cleaning previous deployment...'
-                // Remove previous data
-                sh "rm -rf ${env.DEPLOY_DIR}/*"
+                // Checkout the code from the version control system (e.g., Git)
+                git 'https://github.com/your-repo/webhosting.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                // Commands to build the project
-                // For example, if it's a Node.js project:
-                sh 'npm install'
-                sh 'npm run build'
+                // Since this is a static HTML project, there is no build step
+                echo 'No build step needed for HTML project'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                // Commands to run tests
-                // For example, if it's a Node.js project:
-                sh 'npm test'
+                // Run some basic tests to ensure the HTML is valid
+                echo 'Running HTML validation tests...'
+                sh '''
+                # Example: Use a tool like tidy to validate HTML
+                # Install tidy if not already installed
+                sudo apt-get install -y tidy
+                # Validate all HTML files
+                find . -name "*.html" -exec tidy -errors {} \;
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the new build...'
-                // Copy new data to the deployment directory
-                sh "cp -r * ${env.DEPLOY_DIR}/"
+                // Deploy the HTML files to a web server or a static hosting service
+                echo 'Deploying HTML files...'
+                sh '''
+                # Example: Copy files to /var/www/html (assuming a local web server setup)
+                sudo cp -r * /var/www/html/
+                '''
             }
         }
     }
 
     post {
         always {
-            echo 'Cleaning up...'
             // Clean up workspace
-            deleteDir()
+            cleanWs()
         }
         success {
-            echo 'Deployment succeeded!'
+            // Notify success
+            echo 'Build, test, and deployment successful'
         }
         failure {
-            echo 'Deployment failed!'
+            // Notify failure
+            echo 'Build, test, or deployment failed'
         }
     }
 }
