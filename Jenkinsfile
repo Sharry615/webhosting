@@ -1,25 +1,36 @@
-pipeline {
-    agent any
-
+pipeline{
+    agent any 
+    environment {
+    AWS_DEFAULT_REGION = "ap-south-1"
+    THE_BUTLER_SAYS_SO = credentials('jenkins-aws')
+    }
     stages {
-        stage('Build') {
+        stage ('Build'){
             steps {
-                echo 'this is build stage'
+                echo "Building stage"
             }
         }
-
-        stage('Test') {
+        stage ('Test'){
             steps {
-                echo 'this is build stage'
-                '''
+                echo "Testing stage"
+
             }
         }
-
-        stage( 'release') {
-        steps {
-        echo 'this is release stage'
+        stage ('Deploy to S3'){ 
+            steps{ 
+                echo "Deploying" 
+                sh ' aws s3 cp ./index.html s3://testing-pipeline11 '
+            } 
         }
 
     }
 
+    post{
+        success {
+            echo "success"
+        }
+        failure {
+            echo "failure"
+        }
+    }
 }
